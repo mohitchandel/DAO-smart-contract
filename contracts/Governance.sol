@@ -7,7 +7,7 @@ import "./VotingToken.sol";
 contract Governance is Controller {
 
     address private admin;
-    VotingToken public token;
+    VotingToken private token;
     uint256 private id;
 
     enum VotedFor{YES, NO}
@@ -84,7 +84,7 @@ contract Governance is Controller {
         require(proposals[_id].owner == msg.sender || msg.sender == admin, "Only proposal creator or admin can mark complete");
         require(proposals[_id].owner != address(0), "Proposal does not exist");
         require(proposals[id].votingPeriod < block.timestamp, "Voting period not ended yet");
-        require(proposals[_id].isComplete != false, "Proposal already marked complete");
+        require(proposals[_id].isComplete == false, "Proposal already marked complete");
         proposals[id].isComplete = true;
         proposals[_id].completedOn = block.timestamp;
     }
@@ -98,6 +98,7 @@ contract Governance is Controller {
 
     function execution(uint256 _id) external {
         require(Controller.canExecute(msg.sender) == true, "Don't have execution rights");
+        require(proposals[_id].votedYes > proposals[_id].votedNo, "Denied Proposal can't be executed");
         require(proposals[_id].owner != address(0), "Proposal does not exist");
         require(proposals[_id].isComplete != false, "Proposal is not completed yet");
         require(Controller.isExecutable(proposals[_id].completedOn) == true, "Can't execute before 1 week");
