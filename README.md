@@ -1,4 +1,4 @@
-## Uniswap Smart Contract
+## DAO smart contract
 
 This Project is deployed on the Rinkeby testnet
 
