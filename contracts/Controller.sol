@@ -14,7 +14,7 @@ contract Controller {
     }
 
     function isExecutable(uint256 _completeDate) internal view returns(bool){
-        if((block.timestamp + 1 weeks) > _completeDate) return true;
+        if(block.timestamp > (_completeDate + 1 weeks)) return true;
         else return false;
     }
 

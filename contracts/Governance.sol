@@ -15,6 +15,7 @@ contract Governance is Controller {
     struct Proposal{
         uint256 id;
         string name;
+        string description;
         uint256 votedYes;
         uint256 votedNo;
         uint256 votingPeriod;
@@ -45,22 +46,16 @@ contract Governance is Controller {
         admin = msg.sender;
     }
 
-    function createPeoposal(string memory _name, uint256 _votingWeakPeriod) external {
+    function createProposal(string memory _name, string memory _description, uint256 _votingWeakPeriod) external {
         require(Controller.canPropose(msg.sender) == true, "don't have proposal rights");
         require(proposalOwner[msg.sender].owner == address(0), "Can submit only one proposal at a time");
         id += 1;
         proposals[id].id = id;
         proposals[id].name = _name;
+        proposals[id].description = _description;
         proposals[id].votingPeriod = block.timestamp + (_votingWeakPeriod * 1 weeks);
         proposals[id].owner = msg.sender;
         proposalOwner[msg.sender] = ProposalOwner(id, _name, msg.sender, false);
-    }
-
-    function removeProposal(uint256 _id) external {
-        require(proposals[_id].owner == msg.sender || msg.sender == admin, "Only proposal creator or admin can remove");
-        require(proposals[_id].isComplete != false, "Proposal is not completed yet");
-        delete proposals[_id];
-        delete proposalOwner[msg.sender];
     }
 
     function voteForProposal(uint256 _id, VotedFor _voteFor) external {
@@ -103,6 +98,13 @@ contract Governance is Controller {
         require(proposals[_id].isComplete != false, "Proposal is not completed yet");
         require(Controller.isExecutable(proposals[_id].completedOn) == true, "Can't execute before 1 week");
         proposals[_id].isExecuted = true;
-    }   
+    }
+
+    function removeProposal(uint256 _id) external {
+        require(msg.sender == admin, "Only proposal creator or admin can remove");
+        require(proposals[_id].isComplete != false, "Proposal is not completed yet");
+        delete proposals[_id];
+        delete proposalOwner[msg.sender];
+    }
 
 }
