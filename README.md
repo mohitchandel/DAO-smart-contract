@@ -1,46 +1,60 @@
-# Advanced Sample Hardhat Project
+## Uniswap Smart Contract
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+This Project is deployed on the Rinkeby testnet
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+Governance Smart contract address: [0x5eF8De539c008114225b5Da150c93FcF3AF00F1d](https://rinkeby.etherscan.io/address/0x5eF8De539c008114225b5Da150c93FcF3AF00F1d)
 
-Try running some of the following tasks:
+ERC20 Token (Voting Token) address: [0x38a50e6529Bb1F9CBB2f9631701958c2D959B9a2](https://rinkeby.etherscan.io/address/0x38a50e6529Bb1F9CBB2f9631701958c2D959B9a2)
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
 
-# Etherscan verification
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
+### Usage
+How to clone and run this project
+- Clone this repository : git clone https://github.com/mohitchandel/DAO-smart-contract.git
+- Installing dependencies : `npm install`
+- Compile the smart contracts with Hardhat : `npx hardhat compile`
+- Run the tests : `npx hardhat test`
+- Deploy contract to network : `npx hardhat run --network rinkeby scripts/deploy.js`
 
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+### About
 
-```shell
-hardhat run --network ropsten scripts/deploy.ts
-```
+The Governance smart contract is used to add some proposals and vote on them, this contract is controlled by the Controller smart contract which is responsible for all the controlling actions. This smart contract decide weather user can submit proposal or vote for any proposal. The controller smart contract is also protect users with the time lock e.g. if any proposal is accepted only admin can execute that proposal and admin can only execute after 1 week of acceptance so the users can be ready for the implementation of new proposal.
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
+Governance smart contract will be created after the creation of ERC20 token (Voting Token) because the DAO smart contract (governance) need parameters of token address in its constructor.
 
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
+`constructor(VotingToken _token) {}`
 
-# Performance optimizations
 
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+- #### Roles
+  - Voter : Must have at least 100 Voting Tokens
+  - Proposer : Must have at least 1000 Voting Tokens
+
+
+### How to add Proposal
+
+In Governance smart contract function `createProposal()` is used to add proposal.
+
+this function has following arguments:
+
+- `string memory _name` : It is name of the proposal.
+- `string memory _description` : It is the description of the proposal.
+- `uint256 _votingWeakPeriod` : Voting Time in weeks 
+
+
+
+### How to Vote for Proposal
+
+The `voteForProposal()` function is used to complete the process of voting
+
+This function need two arguments:
+- `uint256 _proposalId` - Proposal Id
+- `VotedFor _voteFor`- where VoteFor is an enum which has two values {YES(0 and NO(1))}
+
+
+In Governance contract there are few more functions 
+
+- `completeProposalVoting(uint256 _proposalId)` : This function is used to mark proposal voting complete.
+- `proposalResult(uint256 _proposalId)` : This function is called to check the final result of the proposal voting.
+- `execution(uint256 _proposalId)` : This function is called when proposal is ready to execute (only admin can call this function)
+- `removeProposal(uint256 _proposalId)` : This function is called when proposal is executed or denied and it needs to be removed.
+
