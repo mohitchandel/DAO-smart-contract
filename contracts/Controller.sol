@@ -5,10 +5,22 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Controller {
 
-    ERC20 private token;
+    ERC20 private token; 
+    address private executors;
 
-    constructor(ERC20 _token) {
+    constructor(ERC20 _token, address _executors) {
         token = _token;
+        executors = _executors;
+    }
+
+    function isExecutable(uint256 _completeDate) internal view returns(bool){
+        if((block.timestamp + 1 weeks) > _completeDate) return true;
+        else return false;
+    }
+
+    function canExecute(address _callAddress) internal view returns(bool){
+        if(_callAddress == executors) return true;
+        else return false;
     }
 
     function canVote(address _participient) internal view returns(bool){
