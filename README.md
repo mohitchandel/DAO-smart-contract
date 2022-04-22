@@ -14,7 +14,7 @@ How to clone and run this project
 - Installing dependencies : `npm install`
 - Compile the smart contracts with Hardhat : `npx hardhat compile`
 - Run the tests : `npx hardhat test`
-- Deploy contract to network : `npx hardhat run --network rinkeby scripts/deploy.js`
+- Deploy contract to network : `npx hardhat run --network rinkeby scripts/deploy.ts`
 
 ### About
 
@@ -48,7 +48,7 @@ The `voteForProposal()` function is used to complete the process of voting
 
 This function need two arguments:
 - `uint256 _proposalId` - Proposal Id
-- `VotedFor _voteFor`- where VoteFor is an enum which has two values {YES(0 and NO(1))}
+- `VotedFor _voteFor`- where VoteFor is an enum which has two values {`YES(0)` and `NO(1)`}
 
 
 In Governance contract there are few more functions 
